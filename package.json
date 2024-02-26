@@ -1,0 +1,30 @@
+{
+  "name": "lending-borrowing-nft-platform",
+  "version": "1.0.0",
+  "description": "lending borrowing platform that uses nft as collateral",
+  "main": "index.js",
+  "directories": {
+    "compile:contract": "npx hardhat compile",
+    "test:contract": "npx hardhat test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@openzeppelin/contracts": "^5.0.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.12",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.20",
+    "chai": "^4.3.8",
+    "hardhat": "^2.20.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
