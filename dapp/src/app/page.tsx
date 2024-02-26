@@ -2,7 +2,7 @@
 
 import { MetaMaskProvider, useSDK } from "@metamask/sdk-react";
 import WalletIcon from "../../public/icons/WalletIcon";
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 const ConnectWalletButton = () => {
   const { sdk, connected, connecting } = useSDK();
@@ -66,8 +66,7 @@ const Home = () => {
   const { sdk, connected, chainId, balance, account } = useSDK();
 
   const parseBalance = (balance: string) => {
-    console.log("balance", balance)
-    return ethers.formatEther(parseInt(balance, 16))
+    return ethers.formatEther(balance)
   }
 
   return (
