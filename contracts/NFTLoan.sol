@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Simple NFT Loan
 contract NFTLoan is ReentrancyGuard {
+
+    fallback() external payable { }
+    receive() external payable { }
     struct Loan {
         address borrower;
         address lender;
