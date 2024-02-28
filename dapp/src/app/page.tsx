@@ -3,6 +3,7 @@
 import { MetaMaskProvider, useSDK } from "@metamask/sdk-react";
 import WalletIcon from "../../public/icons/WalletIcon";
 import {ethers} from "ethers";
+import LoanForm from "@/app/LoanForm";
 
 const ConnectWalletButton = () => {
   const { sdk, connected, connecting } = useSDK();
@@ -70,13 +71,14 @@ const Home = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <ConnectWalletButton />
-      {connected && (<div>
-        <h3>Account: {account} </h3>
-        <h3>ChainID: {chainId} </h3>
-        <h3>Balance: {parseBalance(balance || "0x0")} </h3>
+      {connected && (<div className="mt-6 p-4 bg-blue-100 border border-indigo-200 rounded-lg shadow">
+        <h3 className="text-lg font-semibold text-indigo-600">Account: <span className="font-normal">{account}</span></h3>
+        <h3 className="text-lg font-semibold text-indigo-600">ChainID: <span className="font-normal">{chainId}</span></h3>
+        <h3 className="text-lg font-semibold text-indigo-600">Balance: <span className="font-normal">{parseBalance(balance || "0x0")}</span></h3>
       </div>)}
+      {connected && <LoanForm/>}
     </div>
   )
 }
