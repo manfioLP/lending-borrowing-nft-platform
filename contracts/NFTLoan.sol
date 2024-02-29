@@ -18,6 +18,7 @@ contract NFTLoan is ReentrancyGuard {
         uint256 startTime;
         uint256 duration;
         bool isFunded;
+        bool canceled;
     }
 
     uint256 public constant FEE_RATE = 1000; // 0.1% per day in basis points
@@ -30,9 +31,15 @@ contract NFTLoan is ReentrancyGuard {
         loanCounter = 0;
     }
 
+    modifier loanNotCanceled(uint256 loanId) {
+        require(!loans[loanId].canceled, "Loan is canceled");
+        _;
+    }
+
     event LoanRequested(uint256 loanId, address borrower, uint256 nftId, address nftAddress, uint256 loanAmount, uint256 duration);
     event LoanFunded(uint256 loanId, address lender);
     event LoanRepaid(uint256 loanId);
+    event LoanCanceled(address borrower, uint256 loanId);
     event CollateralClaimed(uint256 loanId, address lender);
 
     function requestLoan(uint256 _nftId, address _nftAddress, uint256 _loanAmount, uint256 _duration) external {
@@ -46,17 +53,27 @@ contract NFTLoan is ReentrancyGuard {
             loanAmount: _loanAmount,
             startTime: 0, // Will be set when the loan is funded
             duration: _duration,
-            isFunded: false
+            isFunded: false,
+            canceled : false
         });
 
         emit LoanRequested(loanCounter, msg.sender, _nftId, _nftAddress, _loanAmount, _duration);
         loanCounter++;
     }
 
-    function fundLoan(uint256 _loanId) external payable {
+    function requestLoanCancellation(uint256 loanId) external loanNotCanceled(loanId) {
+        require(msg.value == loans[loanId].borrower, "Only loan borrower can cancel");
+        require(!loans[loanId].isFunded, "Cant cancel funded loan");
+
+        loans[loanId].canceled = true;
+        IERC721(_nftAddress).transferFrom(address(this), msg.sender, _nftId);
+        emit LoanCanceled(msg.sender, loanId);
+    }
+
+    function fundLoan(uint256 _loanId) external payable loanNotCanceled(loanId) {
         Loan storage loan = loans[_loanId];
-        require(!loan.isFunded, "Loan already funded.");
-        require(msg.value == loan.loanAmount, "Incorrect loan amount.");
+        require(!loan.isFunded, "Loan already funded");
+        require(msg.value == loan.loanAmount, "Incorrect loan amount");
 
         // Transfer the loan amount to the borrower
         payable(loan.borrower).transfer(msg.value);
@@ -68,7 +85,7 @@ contract NFTLoan is ReentrancyGuard {
         emit LoanFunded(_loanId, msg.sender);
     }
 
-    function repayLoan(uint256 _loanId) external payable nonReentrant {
+    function repayLoan(uint256 _loanId) external payable nonReentrant loanNotCanceled(loanId) {
         Loan storage loan = loans[_loanId];
         require(loan.isFunded, "Loan not funded");
         require(msg.sender == loan.borrower, "Only borrower can repay a loan.");
