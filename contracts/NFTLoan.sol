@@ -68,15 +68,15 @@ contract NFTLoan is ReentrancyGuard {
     }
 
     function requestLoanCancellation(uint256 loanId) external loanNotCanceled(loanId) {
-        require(msg.value == loans[loanId].borrower, "Only loan borrower can cancel");
+        require(msg.sender == loans[loanId].borrower, "Only loan borrower can cancel");
         require(!loans[loanId].isFunded, "Cant cancel funded loan");
 
         loans[loanId].canceled = true;
-        IERC721(_nftAddress).transferFrom(address(this), msg.sender, _nftId);
+        IERC721(loans[loanId].nftAddress).transferFrom(address(this), msg.sender, loans[loanId].nftId);
         emit LoanCanceled(msg.sender, loanId);
     }
 
-    function fundLoan(uint256 _loanId) external payable loanNotCanceled(loanId) {
+    function fundLoan(uint256 _loanId) external payable loanNotCanceled(_loanId) {
         Loan storage loan = loans[_loanId];
         require(!loan.isFunded, "Loan already funded");
         require(msg.value == loan.loanAmount, "Incorrect loan amount");
@@ -91,7 +91,7 @@ contract NFTLoan is ReentrancyGuard {
         emit LoanFunded(_loanId, msg.sender, loan.borrower);
     }
 
-    function repayLoan(uint256 _loanId) external payable nonReentrant loanNotCanceled(loanId) {
+    function repayLoan(uint256 _loanId) external payable nonReentrant loanNotCanceled(_loanId) {
         Loan storage loan = loans[_loanId];
         require(loan.isFunded, "Loan not funded");
         require(msg.sender == loan.borrower, "Only borrower can repay a loan.");
