@@ -62,13 +62,13 @@ export default () => {
 		db[borrower][loanIndex].canceled = true;
 	});
 
-	contract.on('LoanFunded', (loanId, lender) => {
+	contract.on('LoanFunded', (loanId, lender, borrower) => {
 		console.log(`[LoanFunded] - User ${lender} funded loan ${loanId.toString()}`);
 
 		// update funded...
 	});
 
-	contract.on('LoanRepaid', (loanId) => {
+	contract.on('LoanRepaid', (loanId, borrower) => {
 		console.log(`[LoanRepaid] - Loan ${loanId.toString()} has been repaid`);
 
 		// update paid...

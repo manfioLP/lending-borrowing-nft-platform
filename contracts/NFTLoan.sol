@@ -26,6 +26,7 @@ contract NFTLoan is ReentrancyGuard {
     uint256 public loanCounter;
 
     mapping(uint256 => Loan) public loans;
+    mapping(address => uint256[]) public loansPerAddress;
 
     constructor() {
         loanCounter = 0;
@@ -36,11 +37,16 @@ contract NFTLoan is ReentrancyGuard {
         _;
     }
 
+    // Custom getter function to retrieve all loan IDs for an address
+    function getLoansForAddress(address _address) external view returns (uint256[] memory) {
+        return loansPerAddress[_address];
+    }
+
     event LoanRequested(uint256 loanId, address borrower, uint256 nftId, address nftAddress, uint256 loanAmount, uint256 duration);
-    event LoanFunded(uint256 loanId, address lender);
-    event LoanRepaid(uint256 loanId);
+    event LoanFunded(uint256 loanId, address lender, address borrower);
+    event LoanRepaid(uint256 loanId, address borrower);
     event LoanCanceled(address borrower, uint256 loanId);
-    event CollateralClaimed(uint256 loanId, address lender);
+    event CollateralClaimed(uint256 loanId, address lender, address borrower);
 
     function requestLoan(uint256 _nftId, address _nftAddress, uint256 _loanAmount, uint256 _duration) external {
         IERC721(_nftAddress).transferFrom(msg.sender, address(this), _nftId);
@@ -82,7 +88,7 @@ contract NFTLoan is ReentrancyGuard {
         loan.startTime = block.timestamp;
         loan.isFunded = true;
 
-        emit LoanFunded(_loanId, msg.sender);
+        emit LoanFunded(_loanId, msg.sender, loan.borrower);
     }
 
     function repayLoan(uint256 _loanId) external payable nonReentrant loanNotCanceled(loanId) {
@@ -100,7 +106,7 @@ contract NFTLoan is ReentrancyGuard {
             payable(msg.sender).transfer(msg.value - repaymentAmount);
         }
 
-        emit LoanRepaid(_loanId);
+        emit LoanRepaid(_loanId, loan.borrower);
     }
 
     function calculateRepaymentAmount(uint256 _loanId) public view returns (uint256) {
@@ -120,6 +126,6 @@ contract NFTLoan is ReentrancyGuard {
 
         IERC721(loan.nftAddress).transferFrom(address(this), loan.lender, loan.nftId);
 
-        emit CollateralClaimed(_loanId, loan.lender);
+        emit CollateralClaimed(_loanId, loan.lender, loan.borrower);
     }
 }
