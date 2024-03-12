@@ -1,10 +1,12 @@
 import express from 'express';
-import { ethers } from 'ethers';
+import {configDotenv} from "dotenv";
+configDotenv()
+
 import useNftLoanContractListener from "./useNftLoanContractListener";
 
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 useNftLoanContractListener()
 

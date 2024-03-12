@@ -11,8 +11,7 @@ interface LoanFormData {
 	duration: number;
 }
 
-// const NFTLoanContractAddress = "0x319b614Ede65b08D9A4A05fD6Ebbe186C0Ed1b15"
-const NFTLoanContractAddress = "0x47FF90bad1D7d143D4a6cc4B5f19F3BEc7DDe6A7"
+const NFTLoanContractAddress = "0xB35C32E1EF98E2935446393b83525Dfd8BCa68e8"
 const LoanForm: React.FC = () => {
 	const [nftAddress, setNftAddress] = useState<string>('');
 	const [nftTokenId, setNftTokenId] = useState<string>('');

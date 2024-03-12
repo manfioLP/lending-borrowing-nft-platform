@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import contractABI from './NFTLoanABI';
 
 type Loan = {
 	id: string,
@@ -34,7 +35,6 @@ export default () => {
 
 	const provider = new ethers.JsonRpcProvider(`https://${process.env.NETWORK}.infura.io/v3/${process.env.INFURA_KEY}`);
 
-	const contractABI = require('./NFTLoanABI');
 	const contractAddress = process.env.LOAN_CONTRACT_ADDRESS;
 
 	const contract = new ethers.Contract(contractAddress, contractABI, provider);

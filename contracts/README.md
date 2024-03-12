@@ -1,6 +1,6 @@
 This is the contracts repo
 
-currently only contains NFTLoan, and it's deployed at 0x8382c2c16a60F38546b929E633B3B1825a75A869
+currently only contains NFTLoan, and it's deployed at 0xB35C32E1EF98E2935446393b83525Dfd8BCa68e8
 
 before running please:
 
